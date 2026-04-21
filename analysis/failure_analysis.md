@@ -1,6 +1,6 @@
 # Báo cáo Phân tích Thất bại (Failure Analysis Report)
 
-## 0. Retrieval Quality (Người 1 - đã đánh giá)
+## 0. Retrieval Quality 
 
 | Metric | Kết quả | Cases |
 |--------|---------|-------|
