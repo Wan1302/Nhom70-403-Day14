@@ -1,3 +1,4 @@
+import asyncio
 from typing import List, Dict
 from engine.vector_store import search
 
@@ -28,7 +29,7 @@ class RetrievalEvaluator:
             if not expected_ids or expected_ids == ["out_of_context"]:
                 continue
 
-            retrieved = search(question, top_k=self.top_k * 3)
+            retrieved = await asyncio.to_thread(search, question, self.top_k * 3)
             seen, retrieved_ids = set(), []
             for r in retrieved:
                 af = r["article_file"]
