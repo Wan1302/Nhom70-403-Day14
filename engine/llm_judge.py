@@ -1,6 +1,6 @@
 """
 Multi-Judge evaluation engine — follows LLM-as-Judge best practices:
-  - Multiple judges (GPT-4o + GPT-4o-mini), average scores
+  - Multiple judges (GPT-4o + GPT-4.1 mini), average scores
   - Randomize order: Judge A sees (Expected -> Agent), Judge B sees (Agent -> Expected)
   - Chain-of-thought: judges reason step by step before scoring
   - Include rationale: per-dimension reasoning returned
@@ -23,11 +23,11 @@ load_dotenv()
 OPENAI_API_KEY = os.getenv("OPEN_API_KEY") or os.getenv("OPENAI_API_KEY")
 
 JUDGE_A_MODEL = "gpt-4o"
-JUDGE_B_MODEL = "gpt-4o-mini"
+JUDGE_B_MODEL = "gpt-4.1-mini"
 
 _COST = {
-    "gpt-4o":      {"in": 2.50, "out": 10.00},
-    "gpt-4o-mini": {"in": 0.15, "out":  0.60},
+    "gpt-4o":       {"in": 2.50, "out": 10.00},
+    "gpt-4.1-mini": {"in": 0.40, "out":  1.60},
 }
 
 # ------------------------------------------------------------------
@@ -158,7 +158,7 @@ class LLMJudge:
         """
         Best-practice multi-judge evaluation:
           - Judge A (GPT-4o)      sees Expected -> Agent  (normal order)
-          - Judge B (GPT-4o-mini) sees Agent -> Expected  (swapped order)
+          - Judge B (GPT-4.1 mini) sees Agent -> Expected  (swapped order)
           - Both use chain-of-thought + per-dimension rationale
           - Final score = average; agreement = fraction of dims with |diff| <= 1
           - Conflicts (diff > 1) are flagged for human review
@@ -220,7 +220,7 @@ class LLMJudge:
         self, question: str, answer: str, ground_truth: str
     ) -> Dict[str, Any]:
         """
-        Explicit position bias check using only GPT-4o-mini for cost efficiency.
+        Explicit position bias check using only GPT-4.1 mini for cost efficiency.
         Calls the same judge twice with normal vs swapped prompt order.
         High bias_delta (> 1.0) indicates the judge's score depends on presentation order.
         Note: evaluate_multi_judge() already mitigates this by design (each judge sees
