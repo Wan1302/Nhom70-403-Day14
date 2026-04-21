@@ -1,0 +1,47 @@
+{
+  "metadata": {
+    "version": "Agent_V2_Optimized",
+    "agent_variant": "v2",
+    "total": 90,
+    "timestamp": "2026-04-21 17:13:01",
+    "evaluator_backend": "ragas"
+  },
+  "metrics": {
+    "avg_score": 4.631555555555555,
+    "hit_rate": 0.8666666666666667,
+    "mrr": 0.7707407407407406,
+    "agreement_rate": 0.98889,
+    "faithfulness": 0.8777777777777778,
+    "relevancy": 0.6955766666666666,
+    "avg_latency": 1.15236790555387,
+    "pass_rate": 0.9888888888888889,
+    "total_tokens_used": 62894,
+    "total_generation_cost_usd": 0.010269,
+    "total_judge_cost_usd": 0.209048,
+    "total_cost_estimate": 0.219317
+  },
+  "regression": {
+    "decision": "APPROVE",
+    "reason": "Bản V2 cải thiện điểm tổng hợp nhưng vẫn có chỉ số giảm: agreement_rate, faithfulness.",
+    "baseline_version": "Agent_V1_Base",
+    "candidate_version": "Agent_V2_Optimized",
+    "delta": {
+      "avg_score": 0.2074,
+      "hit_rate": 0.0,
+      "agreement_rate": -0.0037,
+      "faithfulness": -0.0074,
+      "relevancy": 0.0868
+    },
+    "improved_metrics": [
+      "avg_score",
+      "relevancy"
+    ],
+    "regressed_metrics": [
+      "agreement_rate",
+      "faithfulness"
+    ],
+    "unchanged_metrics": [
+      "hit_rate"
+    ]
+  }
+}
