@@ -43,7 +43,18 @@ Ban đầu phần RAGAS bị lỗi do API của thư viện trong môi trường
 
 Đây là một phần em thấy rất quan trọng vì nếu evaluator sai thì toàn bộ kết quả benchmark sẽ không đáng tin, dù pipeline vẫn chạy.
 
-### 2.3. So sánh V1 và V2
+### 2.3. Tích hợp Multi-Judge vào pipeline benchmark
+
+Mặc dù em không phải người viết toàn bộ `engine/llm_judge.py`, em có tham gia phần tích hợp để module judge thật chạy đúng trong toàn pipeline. Cụ thể, sau khi pull code nhóm về, em rà lại luồng trong `main.py` và `engine/runner.py` để bảo đảm:
+
+- benchmark không còn dùng judge placeholder
+- kết quả judge được ghi đúng vào từng test case
+- chi phí judge được tách riêng khỏi chi phí generation
+- `agreement_rate` được tổng hợp vào `reports/summary.json`
+
+Phần này quan trọng vì nếu chỉ có judge chạy riêng lẻ mà không nối đúng vào pipeline thì nhóm vẫn không chứng minh được Multi-Judge consensus ở mức hệ thống hoàn chỉnh.
+
+### 2.4. So sánh V1 và V2
 
 Em hoàn thiện logic regression trong `main.py` để so sánh trực tiếp giữa:
 
@@ -59,7 +70,7 @@ Sau khi rà lại yêu cầu trong `GRADING_RUBRIC.md`, em đã chỉnh release 
 - `regressed_metrics`
 - `unchanged_metrics`
 
-### 2.4. Failure Analysis
+### 2.5. Failure Analysis
 
 Em điền đầy đủ `analysis/failure_analysis.md` bằng số liệu thật từ:
 
@@ -74,6 +85,16 @@ Em không chỉ điền số liệu tổng mà còn:
 - đề xuất action plan theo mức ưu tiên
 
 Phần này giúp kết nối benchmark kỹ thuật với góc nhìn phân tích nguyên nhân gốc rễ, đúng tinh thần của một hệ thống evaluation factory.
+
+### 2.6. Bằng chứng đóng góp qua Git commits
+
+Để chứng minh phần việc kỹ thuật em đã thực hiện, em có thể đối chiếu với một số commit tiêu biểu trong lịch sử Git của nhóm:
+
+- `e502c17` - `feat: implement evaluation pipeline, RAGAS scoring, regression analysis, and reports`
+- `1685d72` - `upload file json`
+- `5fa68d1` - `upload golden data`
+
+Trong đó, commit `e502c17` phản ánh rõ nhất phần em phụ trách: hoàn thiện pipeline đánh giá, tích hợp RAGAS, logic regression và sinh report phục vụ benchmark. Các commit còn lại thể hiện quá trình chuẩn bị dữ liệu và đầu ra benchmark để hoàn thiện bộ nộp bài.
 
 ## 3. Những vấn đề kỹ thuật em đã gặp
 
@@ -118,11 +139,21 @@ Sau đó lấy trung bình trên toàn bộ dataset. MRR hữu ích vì nó khô
 
 Khi dùng nhiều judge model, `agreement_rate` cho biết mức độ đồng thuận giữa các judge. Nếu chỉ dùng một judge đơn lẻ, kết quả có thể bị lệch theo prompt, model bias hoặc thứ tự trình bày. Multi-judge giúp tăng độ tin cậy của benchmark.
 
-### 4.3. Position Bias
+### 4.3. Cohen's Kappa
+
+`Cohen's Kappa` là một thước đo mức độ đồng thuận giữa hai người chấm hoặc hai judge sau khi đã trừ đi phần đồng thuận có thể xảy ra do ngẫu nhiên. Nếu chỉ nhìn `agreement_rate`, đôi khi ta thấy hai judge giống nhau khá nhiều nhưng chưa chắc đó là đồng thuận mạnh về mặt thống kê. `Cohen's Kappa` giúp đánh giá chặt hơn:
+
+- gần `1.0` nghĩa là đồng thuận rất mạnh
+- gần `0` nghĩa là mức đồng thuận không khác nhiều so với ngẫu nhiên
+- nhỏ hơn `0` nghĩa là có xu hướng bất đồng
+
+Trong bài lab này, nhóm em chủ yếu báo cáo `agreement_rate` vì đó là chỉ số trực tiếp và dễ giải thích hơn trong pipeline hiện tại. Tuy nhiên, về mặt kỹ thuật em hiểu rằng `Cohen's Kappa` là lựa chọn tốt hơn nếu muốn đánh giá chất lượng đồng thuận giữa các judge một cách nghiêm ngặt hơn.
+
+### 4.4. Position Bias
 
 `Position Bias` là hiện tượng judge có thể chấm khác nhau chỉ vì thứ tự hiển thị câu trả lời thay đổi. Ví dụ nếu đáp án chuẩn luôn được đặt trước, model judge có thể vô thức ưu tiên phần xuất hiện đầu. Đây là lý do tại sao trong lab có ý tưởng dùng thứ tự prompt khác nhau giữa các judge để giảm thiên lệch này.
 
-### 4.4. Trade-off giữa chi phí và chất lượng
+### 4.5. Trade-off giữa chi phí và chất lượng
 
 Một điểm em học được rõ hơn là benchmark AI không chỉ là “điểm cao”, mà còn là:
 
