@@ -6,4 +6,3 @@ reports/
 data/golden_set.jsonl
 venv/
 data/chroma_db/
-=0.40.0
