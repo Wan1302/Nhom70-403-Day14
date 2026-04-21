@@ -1,6 +1,6 @@
 """
 RAG Agent using ChromaDB retrieval + OpenAI generation.
-V1: fixed-size chunking (500 chars), top_k=5, strict anti-hallucination prompt
+V1: fixed-size chunking (200 chars), top_k=5, strict anti-hallucination prompt
 V2: paragraph-based chunking, top_k=5, strict anti-hallucination prompt
 Only difference: chunking strategy (fixed-size vs semantic paragraph).
 """
