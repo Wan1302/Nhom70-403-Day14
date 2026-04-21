@@ -48,14 +48,20 @@ def chunk_text(text: str) -> List[str]:
     return [c for c in chunks if c.strip()]
 
 
+_collection = None
+
 def get_collection() -> chromadb.Collection:
+    global _collection
+    if _collection is not None:
+        return _collection
     ef = SentenceTransformerEmbeddingFunction(model_name=EMBED_MODEL)
     client = chromadb.PersistentClient(path=str(CHROMA_DIR))
-    return client.get_or_create_collection(
+    _collection = client.get_or_create_collection(
         name=COLLECTION_NAME,
         embedding_function=ef,
         metadata={"hnsw:space": "cosine"}
     )
+    return _collection
 
 
 def build_index(force: bool = False) -> chromadb.Collection:
